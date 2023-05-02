@@ -3,16 +3,10 @@ chrome.runtime.onInstalled.addListener(() => {
   updateBlockingRules();
 });
 
-chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === 'sync') {
-    if (changes.blocklist || changes.blockDuration) {
-      updateBlockingRules();
-    }
-  }
-});
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'updateBlockingRules') {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'startBlocking') {
+    updateBlockingRules();
+  } else if (request.action === 'updateBlockingRules') {
     updateBlockingRules();
   }
 });
@@ -50,8 +44,3 @@ function updateBlockingRules() {
     });
   });
 }
-
-
-
-
-updateBlockingRules();
