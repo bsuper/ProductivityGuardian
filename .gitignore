@@ -1,0 +1,26 @@
+# Node.js related
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDE and editor related
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*.log
+*.bak
+
+# Build and distribution related
+dist/
+build/
+*.zip
+*.crx
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Project files
+_metadata/
