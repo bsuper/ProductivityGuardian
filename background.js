@@ -12,9 +12,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function updateBlockingRules() {
-  chrome.storage.sync.get(['blocklist', 'blockDuration'], (result) => {
+  chrome.storage.sync.get(['isBlocking', 'blocklist', 'blockDuration'], (result) => {
+    const isBlocking = result.isBlocking || false;
     const blocklist = result.blocklist || [];
     const blockDuration = result.blockDuration || 30;
+
+    if (!isBlocking) {
+      removeAllRules();
+      return;
+    }
 
     chrome.declarativeNetRequest.getDynamicRules((existingRules) => {
       const removeRuleIds = existingRules.map((rule) => rule.id);
@@ -41,6 +47,16 @@ function updateBlockingRules() {
           });
         }
       );
+    });
+  });
+}
+
+function removeAllRules() {
+  chrome.declarativeNetRequest.getDynamicRules((existingRules) => {
+    const removeRuleIds = existingRules.map((rule) => rule.id);
+
+    chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: removeRuleIds,
     });
   });
 }

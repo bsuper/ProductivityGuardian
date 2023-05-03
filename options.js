@@ -3,9 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const blockDurationInput = document.getElementById('block-duration');
   const addWebsiteButton = document.getElementById('add-website');
   const startBlockingButton = document.getElementById('start-blocking');
+  const stopBlockingButton = document.getElementById('stop-blocking');
   const clearAllButton = document.getElementById('clear-all');
   const blocklistElement = document.getElementById('blocklist');
   const setDurationButtons = document.querySelectorAll('.set-duration');
+  const blockingStatusElement = document.getElementById('blocking-status');
 
   function displayBlocklist(blocklist) {
     blocklistElement.innerHTML = '';
@@ -17,12 +19,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  chrome.storage.sync.get(['blocklist', 'blockDuration'], (result) => {
+  function updateBlockingStatus(isBlocking) {
+    blockingStatusElement.textContent = isBlocking ? 'Blocking is active.' : 'Blocking is inactive.';
+  }
+
+  chrome.storage.sync.get(['blocklist', 'blockDuration', 'isBlocking'], (result) => {
     const blocklist = result.blocklist || [];
     const blockDuration = result.blockDuration || 30;
+    const isBlocking = result.isBlocking || false;
 
     displayBlocklist(blocklist);
     blockDurationInput.value = blockDuration;
+    updateBlockingStatus(isBlocking);
   });
 
   setDurationButtons.forEach((button) => {
@@ -54,7 +62,18 @@ document.addEventListener('DOMContentLoaded', () => {
       chrome.storage.sync.set({ blockDuration }, () => {
         chrome.runtime.sendMessage({ action: 'startBlocking' });
       });
+
+      chrome.storage.sync.set({ isBlocking: true }, () => {
+        updateBlockingStatus(true);
+      });
     }
+  });
+
+  stopBlockingButton.addEventListener('click', () => {
+    chrome.storage.sync.set({ isBlocking: false }, () => {
+      updateBlockingStatus(false);
+      chrome.runtime.sendMessage({ action: 'updateBlockingRules' });
+    });
   });
 
   clearAllButton.addEventListener('click', () => {
