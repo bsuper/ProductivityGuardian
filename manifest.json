@@ -1,43 +1,48 @@
 {
-    "manifest_version": 3,
-    "name": "Productivity Guardian",
-    "version": "1.0.0",
-    "description": "A Chrome extension to block distracting websites and boost productivity.",
-    "icons": {
+  "manifest_version": 3,
+  "name": "Productivity Guardian",
+  "version": "1.0.0",
+  "description": "A Chrome extension to block distracting websites and boost productivity.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
-    },
-    "action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "16": "icons/icon16.png",
-        "48": "icons/icon48.png",
-        "128": "icons/icon128.png"
-      }
-    },
-    "options_page": "options.html",
-    "background": {
-      "service_worker": "background.js"
-    },
-    "permissions": [
-      "storage",
-      "declarativeNetRequest"
-    ],
-    "host_permissions": [
-      "*://*/*"
-    ],
-    "content_security_policy": {
-      "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'"
-    },
-    "declarative_net_request": {
-      "rule_resources": [
-        {
-          "id": "ruleset_1",
-          "path": "rules.json",
-          "enabled": true
-        }
-      ]
     }
-  }
-  
+  },
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "declarativeNetRequest",
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "path": "rules/empty.json",
+        "enabled": true
+      }
+    ]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked.html", "images/*"],
+      "matches": ["<all_urls>"],
+      "use_dynamic_url": true
+    }
+  ]
+}

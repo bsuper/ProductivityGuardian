@@ -34,7 +34,8 @@ function updateBlockingRules() {
             id: index + 1,
             priority: 1,
             action: {
-              type: 'block',
+              type: 'redirect',
+              redirect: { url: "https://yahoo.com" },
             },
             condition: {
               urlFilter: `*://*${website}*`,
