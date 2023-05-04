@@ -35,7 +35,7 @@ function updateBlockingRules() {
             priority: 1,
             action: {
               type: 'redirect',
-              redirect: { url: "https://yahoo.com" },
+              redirect: { url: "https://bsuper.github.io/blocked" },
             },
             condition: {
               urlFilter: `*://*${website}*`,
