@@ -14,8 +14,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     blocklist.forEach((website) => {
       const li = document.createElement('li');
+      li.className = 'bg-gray-100 p-2 rounded-lg flex justify-between items-center';
       li.textContent = website;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'bg-red-500 text-white px-4 py-2 rounded-lg';
+      removeBtn.textContent = 'Remove';
+      removeBtn.addEventListener('click', () => {
+        removeFromBlocklist(website);
+      });
+
+      li.appendChild(removeBtn);
       blocklistElement.appendChild(li);
+    });
+  }
+
+  function removeFromBlocklist(website) {
+    chrome.storage.sync.get('blocklist', (result) => {
+      const blocklist = result.blocklist || [];
+      const updatedBlocklist = blocklist.filter((item) => item !== website);
+
+      chrome.storage.sync.set({ blocklist: updatedBlocklist }, () => {
+        displayBlocklist(updatedBlocklist);
+        chrome.runtime.sendMessage({ action: 'updateBlockingRules' });
+      });
     });
   }
 

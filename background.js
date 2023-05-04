@@ -1,7 +1,8 @@
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.sync.set({ blocklist: [], blockDuration: 1800 });
+  chrome.storage.sync.set({ blocklist: [], blockDuration: 1800, isBlocking: false });
   updateBlockingRules();
 });
+
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'startBlocking') {

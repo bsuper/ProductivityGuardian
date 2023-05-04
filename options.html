@@ -3,54 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="dist/styles.css">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
   <title>Productivity Guardian - Options</title>
 </head>
 <body class="bg-gray-100">
   <div class="container mx-auto px-4 py-10">
-    <h1 class="text-2xl font-bold mb-4">Productivity Guardian - Options</h1>
+    <h1 class="text-3xl font-semibold mb-8">Productivity Guardian - Options</h1>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="website">
-        Website to block:
-      </label>
-      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="website" type="text" placeholder="example.com">
-      <button id="add-website" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-2 rounded">Add Website</button>
-    </div>
-
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="block-duration">
-        Custom block duration (minutes):
-      </label>
-      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="block-duration" type="number" min="1">
-    </div>
-
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">
-        Preset block durations:
-      </label>
-      <div>
-        <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="10">10 minutes</button>
-        <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="20">20 minutes</button>
-        <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="30">30 minutes</button>
-        <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="45">45 minutes</button>
-        <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mb-2 rounded" data-duration="60">1 hour</button>
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">Blocking Status</h2>
+      <div class="border rounded p-4 bg-white shadow-md">
+        <p id="blocking-status" class="text-lg font-medium text-gray-700">Blocking is currently disabled.</p>
+        <button id="start-blocking" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 mt-2 mr-2 rounded">Start Blocking</button>
+        <button id="stop-blocking" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 mt-2 rounded-md">Stop Blocking</button>
       </div>
     </div>
 
-    <button id="start-blocking" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Start Blocking</button>
-    <button id="stop-blocking" class="bg-red-500 text-white px-4 py-2 rounded-md">Stop Blocking</button>
-    <div id="blocking-status" class="mt-4 text-center"></div>
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">Blocked Websites</h2>
+      <div class="border rounded p-4 bg-white shadow-md">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="website">Website to block:</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2" id="website" type="text" placeholder="example.com">
+        <button id="add-website" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Website</button>
+        <ul id="blocklist" class="divide-y divide-gray-200 mt-4 space-y-2">
+          <!-- Blocked websites will be added here with Tailwind CSS styling -->
+        </ul>
+        <button id="clear-all" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mt-4 rounded">Clear All</button>
+      </div>
+    </div>
 
-    <div class="mt-6">
-      <h2 class="text-xl font-bold mb-2">Blocked Websites:</h2>
-      <ul id="blocklist" class="list-disc list-inside">
-        <!-- Blocked websites will be added here -->
-      </ul>
-      <button id="clear-all" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mt-2 rounded">Clear All</button>
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">Block Duration</h2>
+      <div class="border rounded p-4 bg-white shadow-md">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="block-duration">Custom block duration (minutes):</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="block-duration" type="number" min="1">
+        <div class="mt-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Preset block durations:</label>
+          <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="10">10 minutes</button>
+          <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="20">20 minutes</button>
+          <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="30">30 minutes</button>
+          <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="45">45 minutes</button>
+          <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mb-2 rounded" data-duration="60">1 hour</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <script src="options.js"></script>
-  </body>
+</body>
 </html>
+
