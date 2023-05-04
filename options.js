@@ -41,18 +41,55 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function updateBlockingStatus(isBlocking) {
-    blockingStatusElement.textContent = isBlocking ? 'Blocking is active.' : 'Blocking is inactive.';
+  function displayRemainingTime(blockingEndTime) {
+    const timeRemainingElement = document.getElementById('time-remaining');
+  
+    if (!blockingEndTime) {
+      timeRemainingElement.textContent = '';
+      return;
+    }
+  
+    const remainingTime = blockingEndTime - Date.now();
+    if (remainingTime <= 0) {
+      timeRemainingElement.textContent = 'Block time has ended.';
+      return;
+    }
+  
+    const minutes = Math.floor(remainingTime / (60 * 1000));
+    const seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+    timeRemainingElement.textContent = `Time remaining: ${minutes}m ${seconds}s`;
   }
+  
+  let countdownInterval;
 
-  chrome.storage.sync.get(['blocklist', 'blockDuration', 'isBlocking'], (result) => {
+  function updateBlockingStatus(isBlocking, blockingEndTime) {
+    blockingStatusElement.textContent = isBlocking ? 'Blocking is active.' : 'Blocking is inactive.';
+    displayRemainingTime(blockingEndTime);
+  
+    if (isBlocking) {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+      countdownInterval = setInterval(() => {
+        displayRemainingTime(blockingEndTime);
+      }, 1000);
+    } else {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+      displayRemainingTime(null); // Clear the remaining time display when blocking is inactive
+    }
+  }
+  
+  chrome.storage.sync.get(['blocklist', 'blockDuration', 'isBlocking', 'blockingEndTime'], (result) => {
     const blocklist = result.blocklist || [];
-    const blockDuration = result.blockDuration || 30;
+    const blockDuration = result.blockDuration || 25; // Change the default blockDuration value here
     const isBlocking = result.isBlocking || false;
-
+    const blockingEndTime = result.blockingEndTime || null;
+  
     displayBlocklist(blocklist);
     blockDurationInput.value = blockDuration;
-    updateBlockingStatus(isBlocking);
+    updateBlockingStatus(isBlocking, blockingEndTime);
   });
 
   setDurationButtons.forEach((button) => {
@@ -81,19 +118,20 @@ document.addEventListener('DOMContentLoaded', () => {
   startBlockingButton.addEventListener('click', () => {
     const blockDuration = parseInt(blockDurationInput.value, 10);
     if (blockDuration > 0) {
-      chrome.storage.sync.set({ blockDuration }, () => {
+      const blockingEndTime = Date.now() + blockDuration * 60 * 1000;
+      chrome.storage.sync.set({ blockDuration, blockingEndTime }, () => {
         chrome.runtime.sendMessage({ action: 'startBlocking' });
       });
-
+  
       chrome.storage.sync.set({ isBlocking: true }, () => {
-        updateBlockingStatus(true);
+        updateBlockingStatus(true, blockingEndTime);
       });
     }
   });
-
+  
   stopBlockingButton.addEventListener('click', () => {
     chrome.storage.sync.set({ isBlocking: false }, () => {
-      updateBlockingStatus(false);
+      updateBlockingStatus(false, null);
       chrome.runtime.sendMessage({ action: 'updateBlockingRules' });
     });
   });
