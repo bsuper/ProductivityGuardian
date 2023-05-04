@@ -1,54 +1,105 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const pauseButton = document.getElementById('pause-button');
-  const blockedWebsitesCount = document.getElementById('blocked-websites-count');
-  const remainingBlockDuration = document.getElementById('remaining-block-duration');
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBlockingButton = document.getElementById("toggle-blocking");
+  const openOptionsButton = document.getElementById("open-options");
+  const addWebsiteButton = document.getElementById("add-website");
+  const blockedWebsitesCountElement = document.getElementById(
+    "blocked-websites-count"
+  );
+  const timeRemainingElement = document.getElementById("time-remaining");
+  const websiteInput = document.getElementById("website");
+  const errorMessageElement = document.getElementById("error-message");
 
-  // Get and display blocklist and block duration
-  chrome.storage.sync.get(['blocklist', 'blockDuration'], (result) => {
-    const blocklist = result.blocklist || [];
-    const blockDuration = result.blockDuration || 1800;
-
-    blockedWebsitesCount.textContent = blocklist.length;
-    const minutes = Math.floor(blockDuration / 60);
-    const seconds = blockDuration % 60;
-    remainingBlockDuration.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
-    // Start countdown if there are blocked websites
-    if (blocklist.length > 0) {
-      startCountdown(blockDuration);
-    }
-  });
-
-  // Toggle pause/resume functionality
-  let isPaused = false;
-  let countdownInterval;
-  pauseButton.addEventListener('click', () => {
-    isPaused = !isPaused;
-    pauseButton.textContent = isPaused ? 'Resume' : 'Pause';
-    if (isPaused) {
-      clearInterval(countdownInterval);
-    } else {
-      chrome.storage.sync.get(['blockDuration'], (result) => {
-        const blockDuration = result.blockDuration || 1800;
-        const remainingDuration = parseInt(remainingBlockDuration.textContent.split(':')[0]) * 60 + parseInt(remainingBlockDuration.textContent.split(':')[1]);
-        startCountdown(remainingDuration);
-      });
-    }
-  });
-
-  // Countdown function
-  function startCountdown(duration) {
-    clearInterval(countdownInterval);
-    countdownInterval = setInterval(() => {
-      if (duration > 0) {
-        duration -= 1;
-        const minutes = Math.floor(duration / 60);
-        const seconds = duration % 60;
-        remainingBlockDuration.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-      } else {
-        clearInterval(countdownInterval);
-      }
-    }, 1000); // Update every second
+  function displayError(message) {
+    errorMessageElement.textContent = message;
   }
-});
 
+  function isValidUrl(url) {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function normalizeUrl(url) {
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+    return "http://" + url;
+  }
+
+  function updatePopupInfo() {
+    chrome.storage.sync.get(
+      ["blocklist", "isBlocking", "blockingEndTime"],
+      (result) => {
+        const blocklist = result.blocklist || [];
+        const isBlocking = result.isBlocking || false;
+        const blockingEndTime = result.blockingEndTime || null;
+
+        blockedWebsitesCountElement.textContent = blocklist.length;
+
+        if (isBlocking && blockingEndTime) {
+          const remainingTime = blockingEndTime - Date.now();
+          if (remainingTime <= 0) {
+            timeRemainingElement.textContent = "Block time has ended.";
+          } else {
+            const minutes = Math.floor(remainingTime / (60 * 1000));
+            const seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+            timeRemainingElement.textContent = `${minutes}m ${seconds}s`;
+          }
+        } else {
+          timeRemainingElement.textContent = "N/A";
+        }
+      }
+    );
+  }
+
+  toggleBlockingButton.addEventListener("click", () => {
+    chrome.storage.sync.get("isBlocking", (result) => {
+      const isBlocking = !result.isBlocking;
+      chrome.storage.sync.set({ isBlocking }, () => {
+        chrome.runtime.sendMessage({ action: "updateBlockingRules" });
+        updatePopupInfo();
+      });
+    });
+  });
+
+  openOptionsButton.addEventListener("click", () => {
+    chrome.runtime.openOptionsPage();
+  });
+
+  addWebsiteButton.addEventListener("click", () => {
+    const website = websiteInput.value.trim();
+
+    if (!website) {
+      displayError("Please enter a website.");
+      return;
+    }
+
+    const normalizedUrl = normalizeUrl(website);
+    if (!isValidUrl(normalizedUrl)) {
+      displayError("Please enter a valid website URL.");
+      return;
+    }
+
+    chrome.storage.sync.get("blocklist", (result) => {
+      const blocklist = result.blocklist || [];
+      if (blocklist.includes(normalizedUrl)) {
+        displayError("This website is already in the blocklist.");
+        return;
+      }
+      blocklist.push(normalizedUrl);
+
+      chrome.storage.sync.set({ blocklist }, () => {
+        chrome.runtime.sendMessage({ action: "updateBlockingRules" });
+        updatePopupInfo();
+      });
+    });
+
+    websiteInput.value = "";
+    displayError("");
+  });
+
+  updatePopupInfo();
+});
