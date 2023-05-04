@@ -20,14 +20,24 @@
       <div class="border rounded p-4 bg-white shadow-md">
         <p id="time-remaining" class="text-lg font-medium text-gray-700"></p>
         <button id="toggle-blocking" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-2 rounded">Toggle Blocking</button>
+        <div class="mt-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Preset block durations:</label>
+          <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="10">10 minutes</button>
+          <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="20">20 minutes</button>
+          <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="30">30 minutes</button>
+          <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-2 mb-2 rounded" data-duration="45">45 minutes</button>
+          <button class="set-duration bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mb-2 rounded" data-duration="60">1 hour</button>
+        </div>
       </div>
     </div>
 
     <div class="mb-4">
       <h2 class="text-lg font-semibold mb-2">Blocked Websites:</h2>
       <div class="border rounded p-4 bg-white shadow-md">
-        <p class="text-lg font-medium text-gray-700 mb-2">Count: <span id="blocked-websites-count">0</span></p>
-        <button id="open-options" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Manage Blocked Websites</button>
+        <ul id="blocked-websites-list" class="divide-y divide-gray-200 space-y-2">
+          <!-- Blocked websites will be added here -->
+        </ul>
+        <button id="open-options" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 mt-2 rounded">Manage Blocked Websites</button>
       </div>
     </div>
 
